@@ -8,7 +8,7 @@ src/transform/validate_transform_loadshedding.py.
 """
 import json
 import os
-from datetime import datetime, timezone_
+from datetime import datetime, timezone
 
 import requests
 
