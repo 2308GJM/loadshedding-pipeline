@@ -12,32 +12,60 @@ from datetime import datetime, timezone
 
 import requests
 
+from dotenv import load_dotenv
+load_dotenv()
+
 RAW_DATA_DIR = os.environ.get("RAW_DATA_DIR", "/opt/airflow/data/raw/loadshedding")
 
-# EskomSePush requires a free API token — https://eskomsepush.gumroad.com/l/api
+# EskomSePush token — https://eskomsepush.gumroad.com/l/api
 API_TOKEN = os.environ.get("ESP_API_TOKEN", "")
 AREA_IDS = os.environ.get("ESP_AREA_IDS", "").split(",") if os.environ.get("ESP_AREA_IDS") else []
 
-BASE_URL = "https://developer.sepush.co.za/business/2.0"
+
+#only used wgen there's no real load-shedding schedule, so the pipeline still has schedule-shaped data
+#to develop against. Valid values are "current", "future", or None.
+SCHEDULE_TEST_MODE = os.environ.get("ESP_SCHEDULE_TEST_MODE") or None
+
+BASE_URL = "https://developer.sepush.co.za/business/3.1"
+
+def _headers():
+    return {"token": API_TOKEN}
 
 
 def fetch_status():
     """National load-shedding status (current stage)."""
     resp = requests.get(
         f"{BASE_URL}/status",
-        headers={"Token": API_TOKEN},
+        headers= _headers(),
         timeout=30,
     )
     resp.raise_for_status()
     return resp.json()
 
 
-def fetch_area_schedule(area_id: str):
+def fetch_area_info(area_id: str):
     """Schedule for a specific area."""
     resp = requests.get(
         f"{BASE_URL}/area",
         headers={"Token": API_TOKEN},
         params={"id": area_id},
+        timeout=30,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+def fetch_schedule(schedule_id: str, test_mode: str | None = None):
+    """
+    Actual outage events + full weekly schedule for one schedule ID.
+    1 API credit — unless test_mode is set, in which case it's free.
+    """
+    params = {"id": schedule_id}
+    if test_mode:
+        params["test"] = test_mode
+    resp = requests.get(
+        f"{BASE_URL}/schedule",
+        headers=_headers(),
+        params=params,
         timeout=30,
     )
     resp.raise_for_status()
@@ -68,8 +96,19 @@ def run(execution_date: str):
         area_id = area_id.strip()
         if not area_id:
             continue
-        schedule = fetch_area_schedule(area_id)
-        _land(schedule, f"area_{area_id}.json", execution_date)
+
+
+        area_info = fetch_area_info(area_id)
+        _land(area_info, f"area_{area_id}.json", execution_date)
+
+        for schedule in area_info.get("schedules", []):
+            schedule_id = schedule.get("id")
+        if not schedule_id:
+            continue
+        schedule_data = fetch_schedule(schedule_id, test_mode=SCHEDULE_TEST_MODE)
+        _land(schedule_data, f"schedule_{schedule_id}.json", execution_date)
+
+
 
 
 if __name__ == "__main__":
