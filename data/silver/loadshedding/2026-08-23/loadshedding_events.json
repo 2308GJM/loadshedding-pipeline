@@ -1,0 +1,32 @@
+[
+  {
+    "schedule_id": "eskde-3",
+    "area_id": "za_gt_jhb_sandown_so5u",
+    "stage": 8,
+    "note": "Stage 8 (TESTING: current)",
+    "start": "2026-08-23T15:28:59.315718+02:00",
+    "end": "2026-08-23T17:28:59.315744+02:00",
+    "fetched_at": "2026-08-23T14:28:59.842914+00:00",
+    "validation_problems": []
+  },
+  {
+    "schedule_id": "eskde-4",
+    "area_id": "za_gt_jhb_sandown_so5u",
+    "stage": 8,
+    "note": "Stage 8 (TESTING: current)",
+    "start": "2026-08-23T15:28:58.010017+02:00",
+    "end": "2026-08-23T17:28:58.010043+02:00",
+    "fetched_at": "2026-08-23T14:28:58.590683+00:00",
+    "validation_problems": []
+  },
+  {
+    "schedule_id": "jhbcitypower3-4",
+    "area_id": "za_gt_jhb_sandown_so5u",
+    "stage": 8,
+    "note": "Stage 8 (TESTING: current)",
+    "start": "2026-08-23T15:29:00.616294+02:00",
+    "end": "2026-08-23T17:29:00.616316+02:00",
+    "fetched_at": "2026-08-23T14:29:01.177078+00:00",
+    "validation_problems": []
+  }
+]
