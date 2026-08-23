@@ -9,8 +9,11 @@ import os
 from datetime import datetime, timezone
 
 import requests
+from dotenv import load_dotenv
 
-RAW_DATA_DIR = os.environ.get("RAW_DATA_DIR", "/opt/airflow/data/raw/weather")
+load_dotenv()
+
+RAW_DATA_DIR = os.environ.get("WEATHER_RAW_DATA_DIR", "/opt/airflow/data/raw/weather")
 
 # Default: Johannesburg. Override via env for other areas matched to
 # load-shedding area IDs.
