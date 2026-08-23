@@ -103,10 +103,10 @@ def run(execution_date: str):
 
         for schedule in area_info.get("schedules", []):
             schedule_id = schedule.get("id")
-        if not schedule_id:
-            continue
-        schedule_data = fetch_schedule(schedule_id, test_mode=SCHEDULE_TEST_MODE)
-        _land(schedule_data, f"schedule_{schedule_id}.json", execution_date)
+            if not schedule_id:
+                continue
+            schedule_data = fetch_schedule(schedule_id, test_mode=SCHEDULE_TEST_MODE)
+            _land(schedule_data, f"schedule_{schedule_id}.json", execution_date)
 
 
 
