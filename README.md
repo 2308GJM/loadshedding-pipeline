@@ -20,37 +20,37 @@ script. Every layer below is a deliberate design decision — see
 ## Architecture
 
 ```
-                 ┌─────────────────────┐        ┌─────────────────────┐
+                 ┌─────────────────────┐        ┌──────────────────────┐
                  │ ingest_loadshedding │        │   ingest_weather     │
                  │ (EskomSePush API)   │        │  (Open-Meteo API)    │
-                 └──────────┬──────────┘        └──────────┬──────────┘
+                 └──────────┬──────────┘        └────────────┬─────────┘
                             │  raw JSON, landed as-is        │
                             ▼                                ▼
-                 ┌─────────────────────┐        ┌─────────────────────┐
+                 ┌─────────────────────┐        ┌──────────────────────┐
                  │ validate_transform  │        │ validate_transform   │
                  │  (PySpark)          │        │  (PySpark)           │
                  │  - schema checks    │        │  - range checks      │
                  │  - dedup / nulls    │        │  - timestamp gaps    │
                  │  - freshness check  │        │  - freshness check   │
-                 └──────────┬──────────┘        └──────────┬──────────┘
+                 └──────────┬──────────┘        └────────────┬─────────┘
                             └───────────────┬────────────────┘
                                             ▼
-                                 ┌─────────────────────┐
-                                 │    join_enrich       │
-                                 │  (PySpark)           │
-                                 │  nearest-timestamp    │
-                                 │  join, tolerance window│
-                                 └──────────┬───────────┘
+                                 ┌─────────────────────────┐
+                                 │    join_enrich          │
+                                 │  (PySpark)              │
+                                 │  nearest-timestamp      │
+                                 │  join, tolerance window │
+                                 └──────────┬──────────────┘
                                             ▼
-                                 ┌─────────────────────┐
+                                 ┌──────────────────────┐
                                  │    load_to_store     │
                                  │  (Postgres / DuckDB) │
                                  └──────────┬───────────┘
                                             ▼
-                                 ┌─────────────────────┐
+                                 ┌──────────────────────┐
                                  │  analysis / insight  │
                                  │  (notebook/dashboard)│
-                                 └───────────────────────┘
+                                 └──────────────────────┘
 ```
 
 All orchestrated by a single Airflow DAG: `dags/loadshedding_pipeline.py`.
