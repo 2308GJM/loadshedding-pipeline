@@ -1,0 +1,38 @@
+[
+  {
+    "schedule_id": "eskde-3",
+    "area_id": "za_gt_jhb_sandown_so5u",
+    "stage": 8,
+    "event_start": "2026-08-23T15:28:59.315718+02:00",
+    "event_end": "2026-08-23T17:28:59.315744+02:00",
+    "weather_time": "2026-08-23T15:00",
+    "temperature_2m": 25.0,
+    "precipitation": 0.0,
+    "weather_code": 0,
+    "match_distance_minutes": 29.0
+  },
+  {
+    "schedule_id": "eskde-4",
+    "area_id": "za_gt_jhb_sandown_so5u",
+    "stage": 8,
+    "event_start": "2026-08-23T15:28:58.010017+02:00",
+    "event_end": "2026-08-23T17:28:58.010043+02:00",
+    "weather_time": "2026-08-23T15:00",
+    "temperature_2m": 25.0,
+    "precipitation": 0.0,
+    "weather_code": 0,
+    "match_distance_minutes": 29.0
+  },
+  {
+    "schedule_id": "jhbcitypower3-4",
+    "area_id": "za_gt_jhb_sandown_so5u",
+    "stage": 8,
+    "event_start": "2026-08-23T15:29:00.616294+02:00",
+    "event_end": "2026-08-23T17:29:00.616316+02:00",
+    "weather_time": "2026-08-23T15:00",
+    "temperature_2m": 25.0,
+    "precipitation": 0.0,
+    "weather_code": 0,
+    "match_distance_minutes": 29.0
+  }
+]
