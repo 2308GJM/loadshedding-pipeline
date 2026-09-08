@@ -34,17 +34,36 @@ def print_report():
     try:
         total = total_row_count(conn)
         print(f"=== Total enriched events: {total} ===\n")
+
         earliest, latest = date_range_covered(conn)
         print(f"Date range covered: {earliest} to {latest}\n")
+
+        print("--- Stage distribution ---")
+        for stage, count in stage_distribution(conn):
+            print(f"  Stage {stage}: {count} events")
     finally:
         conn.close()
-
-
-if __name__ == "__main__":
-    print_report()
-
 
 def date_range_covered(conn):
     with conn.cursor() as cur:
         cur.execute("SELECT MIN(execution_date), MAX(execution_date) FROM enriched_events;")
         return cur.fetchone()
+
+def stage_distribution(conn):
+    """How many events at each stage — tells you whether there's enough
+    variation in stage to say anything meaningful about it."""
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT stage, COUNT(*) as event_count
+            FROM enriched_events
+            GROUP BY stage
+            ORDER BY stage;
+            """
+        )
+        return cur.fetchall()
+
+if __name__ == "__main__":
+    print_report()
+
+
