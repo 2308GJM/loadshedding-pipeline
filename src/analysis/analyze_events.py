@@ -45,6 +45,20 @@ def print_report():
         print("\n--- Temperature by stage ---")
         for stage, count, avg_temp, min_temp, max_temp in temperature_by_stage(conn):
             print(f"  Stage {stage} ({count} events): avg {avg_temp}°C, range {min_temp}-{max_temp}°C")
+
+        if total == 0:
+            print("No data yet — run the pipeline first.")
+            return
+
+            print("\n--- Events by hour of day ---")
+        for hour, count, avg_temp in events_by_hour_of_day(conn):
+            print(f"  {int(hour):02d}:00 — {count} events, avg {avg_temp}°C")
+
+        avg_dist, max_dist, min_dist = match_quality(conn)
+        print(f"\n--- Join match quality ---")
+        print(f"  Average distance to matched weather reading: {avg_dist} min")
+        print(f"  Range: {min_dist}-{max_dist} min")
+
     finally:
         conn.close()
 
@@ -86,6 +100,38 @@ def temperature_by_stage(conn):
         )
         return cur.fetchall()
 
+def events_by_hour_of_day(conn):
+    """Does load-shedding cluster at particular hours? Extracts the hour
+    from event_start and counts events per hour."""
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT
+                EXTRACT(HOUR FROM event_start) as hour_of_day,
+                COUNT(*) as event_count,
+                ROUND(AVG(temperature_2m), 1) as avg_temp
+            FROM enriched_events
+            GROUP BY hour_of_day
+            ORDER BY hour_of_day;
+            """
+        )
+        return cur.fetchall()
+
+
+def match_quality(conn):
+    """How close were the join matches, on average? A high average
+    match_distance_minutes would be worth flagging as a limitation."""
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT
+                ROUND(AVG(match_distance_minutes), 1) as avg_distance,
+                MAX(match_distance_minutes) as max_distance,
+                MIN(match_distance_minutes) as min_distance
+            FROM enriched_events;
+            """
+        )
+        return cur.fetchone()
 if __name__ == "__main__":
     print_report()
 
