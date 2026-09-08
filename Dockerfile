@@ -5,4 +5,4 @@
 FROM apache/airflow:2.9.3-python3.11
 
 USER airflow
-RUN pip install --no-cache-dir pyspark==3.5.1 requests python-dotenv
+RUN pip install --no-cache-dir pyspark==3.5.1 requests python-dotenv psycopg2-binary
