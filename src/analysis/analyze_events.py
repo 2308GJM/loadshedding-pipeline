@@ -34,9 +34,17 @@ def print_report():
     try:
         total = total_row_count(conn)
         print(f"=== Total enriched events: {total} ===\n")
+        earliest, latest = date_range_covered(conn)
+        print(f"Date range covered: {earliest} to {latest}\n")
     finally:
         conn.close()
 
 
 if __name__ == "__main__":
     print_report()
+
+
+def date_range_covered(conn):
+    with conn.cursor() as cur:
+        cur.execute("SELECT MIN(execution_date), MAX(execution_date) FROM enriched_events;")
+        return cur.fetchone()
