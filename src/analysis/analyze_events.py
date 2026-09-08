@@ -41,6 +41,10 @@ def print_report():
         print("--- Stage distribution ---")
         for stage, count in stage_distribution(conn):
             print(f"  Stage {stage}: {count} events")
+
+        print("\n--- Temperature by stage ---")
+        for stage, count, avg_temp, min_temp, max_temp in temperature_by_stage(conn):
+            print(f"  Stage {stage} ({count} events): avg {avg_temp}°C, range {min_temp}-{max_temp}°C")
     finally:
         conn.close()
 
@@ -56,6 +60,25 @@ def stage_distribution(conn):
         cur.execute(
             """
             SELECT stage, COUNT(*) as event_count
+            FROM enriched_events
+            GROUP BY stage
+            ORDER BY stage;
+            """
+        )
+        return cur.fetchall()
+
+def temperature_by_stage(conn):
+    """Average, min, max temperature observed at each stage — the core
+    input to the "does stage correlate with temperature" question."""
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT
+                stage,
+                COUNT(*) as event_count,
+                ROUND(AVG(temperature_2m), 1) as avg_temp,
+                MIN(temperature_2m) as min_temp,
+                MAX(temperature_2m) as max_temp
             FROM enriched_events
             GROUP BY stage
             ORDER BY stage;
