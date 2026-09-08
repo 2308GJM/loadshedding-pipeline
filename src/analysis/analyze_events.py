@@ -1,4 +1,8 @@
-
+"""
+Queries the enriched_events table and prints summary statistics:
+event count by stage, temperature by stage, events by hour of day,
+and join match quality.
+"""
 import os
 
 import psycopg2
