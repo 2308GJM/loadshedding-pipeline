@@ -94,6 +94,11 @@ with DAG(
         python_callable=_load_to_store,
     )
 
+    analyze_events = PythonOperator(
+        task_id="analyze_events",
+        python_callable=_analyze_events,
+    )
+
     ingest_loadshedding >> validate_transform_loadshedding
     ingest_weather >> validate_transform_weather
 
