@@ -102,4 +102,4 @@ with DAG(
     ingest_loadshedding >> validate_transform_loadshedding
     ingest_weather >> validate_transform_weather
 
-    [validate_transform_loadshedding, validate_transform_weather] >> join_enrich >> load_to_store
+    [validate_transform_loadshedding, validate_transform_weather] >> join_enrich >> load_to_store >> analyze_events
