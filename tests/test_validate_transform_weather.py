@@ -3,10 +3,15 @@ from src.transform.validate_transform_weather import (
     flatten_hourly_weather,
     validate_record,
 )
+from datetime import datetime, timezone
 
 
 def _record(**overrides):
-    base = {"temperature_2m": 22.5, "time": "2026-08-17T18:00", "fetched_at": "2026-08-23T17:00:00+00:00"}
+    base =  {
+        "temperature_2m": 22.5,
+        "time": "2026-08-17T18:00",
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+    }
     base.update(overrides)
     return base
 
