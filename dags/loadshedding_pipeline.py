@@ -50,6 +50,9 @@ def _load_to_store(**context):
     from src.load.load_to_store import run
     run(execution_date=context["ds"])
 
+def _analyze_events(**context):
+    from src.analysis.analyze_events import print_report
+    print_report()
 
 with DAG(
     dag_id="loadshedding_weather_pipeline",
