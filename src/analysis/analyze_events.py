@@ -39,6 +39,10 @@ def print_report():
         total = total_row_count(conn)
         print(f"=== Total enriched events: {total} ===\n")
 
+        if total == 0:
+            print("No data yet — run the pipeline first.")
+            return
+
         earliest, latest = date_range_covered(conn)
         print(f"Date range covered: {earliest} to {latest}\n")
 
@@ -50,11 +54,8 @@ def print_report():
         for stage, count, avg_temp, min_temp, max_temp in temperature_by_stage(conn):
             print(f"  Stage {stage} ({count} events): avg {avg_temp}°C, range {min_temp}-{max_temp}°C")
 
-        if total == 0:
-            print("No data yet — run the pipeline first.")
-            return
 
-            print("\n--- Events by hour of day ---")
+        print("\n--- Events by hour of day ---")
         for hour, count, avg_temp in events_by_hour_of_day(conn):
             print(f"  {int(hour):02d}:00 — {count} events, avg {avg_temp}°C")
 
