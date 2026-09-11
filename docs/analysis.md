@@ -20,3 +20,23 @@ events:
   no precipitation
 - Matched within an average of 29 minutes of the nearest hourly
   weather reading, well inside the 90-minute tolerance window
+
+## Honest limitation
+
+With events clustered around a single timestamp, this dataset cannot
+support a genuine correlation claim — there isn't enough variation in
+either the outage timing or the weather conditions observed to say
+whether stage, hour of day, or temperature relate to one another in
+any real sense. This is a direct consequence of developing against
+`test` mode data during a period of no active load-shedding, not a
+flaw in the pipeline's design.
+
+## Honest limitation
+
+With events clustered around a single timestamp, this dataset cannot
+support a genuine correlation claim — there isn't enough variation in
+either the outage timing or the weather conditions observed to say
+whether stage, hour of day, or temperature relate to one another in
+any real sense. This is a direct consequence of developing against
+`test` mode data during a period of no active load-shedding, not a
+flaw in the pipeline's design.
