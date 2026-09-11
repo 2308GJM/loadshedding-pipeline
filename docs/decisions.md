@@ -64,3 +64,20 @@ here once the analysis layer is built.
 - Explicit freshness checks — data older than an expected threshold is
   flagged, not silently used
 - Failures are logged with enough context to debug, not swallowed
+
+## Known limitation: Airflow scheduler task-tracking instability
+
+During Sprint 3, the Airflow scheduler intermittently marked ingestion
+tasks as `up_for_retry` or `failed` even when the underlying Python
+script completed successfully and wrote correct output — confirmed by
+running the same script directly inside the Airflow container, which
+completed cleanly every time. This was traced to Docker Desktop's
+default resource limits under the WSL2 backend combined with the
+project directory living inside a OneDrive-synced folder, which can
+cause file-lock contention with Docker's bind-mounted volumes.
+
+The pipeline's actual logic (ingestion, validation, join, load) is
+independently verified correct — see commit history for manual
+execution proof at every stage. The orchestration layer's instability
+is an infrastructure constraint of the local development environment,
+not a defect in the pipeline design.
