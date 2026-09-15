@@ -2,7 +2,7 @@
 
 A real-world data engineering pipeline that ingests South African load-shedding
 data (EskomSePush) and weather data (Open-Meteo), validates and transforms
-both with PySpark, joins them by timestamp/area, and loads the result into a
+both with Pthon, joins them by timestamp/area, and loads the result into a
 queryable analytical store — orchestrated end-to-end with Apache Airflow and
 containerized with Docker Compose.
 
@@ -28,7 +28,7 @@ script. Every layer below is a deliberate design decision — see
                             ▼                                ▼
                  ┌─────────────────────┐        ┌──────────────────────┐
                  │ validate_transform  │        │ validate_transform   │
-                 │  (PySpark)          │        │  (PySpark)           │
+                 │  (Python)           │        │  (Python)            │
                  │  - schema checks    │        │  - range checks      │
                  │  - dedup / nulls    │        │  - timestamp gaps    │
                  │  - freshness check  │        │  - freshness check   │
@@ -37,7 +37,7 @@ script. Every layer below is a deliberate design decision — see
                                             ▼
                                  ┌─────────────────────────┐
                                  │    join_enrich          │
-                                 │  (PySpark)              │
+                                 │  (Python)               │
                                  │  nearest-timestamp      │
                                  │  join, tolerance window │
                                  └──────────┬──────────────┘
@@ -58,7 +58,7 @@ All orchestrated by a single Airflow DAG: `dags/loadshedding_pipeline.py`.
 ## Stack
 
 - **Orchestration:** Apache Airflow (Docker)
-- **Processing:** PySpark
+- **Processing:** Python
 - **Storage:** PostgreSQL (operational) — DuckDB under evaluation for the
   analytical layer, see `docs/decisions.md`
 - **Sources:** EskomSePush API, Open-Meteo API
@@ -69,7 +69,7 @@ All orchestrated by a single Airflow DAG: `dags/loadshedding_pipeline.py`.
 ```
 dags/               Airflow DAG definitions
 src/ingestion/       Raw data pull tasks (one module per source)
-src/transform/        PySpark validation & transform logic
+src/transform/        Validation & transform logic
 src/load/            Load-to-store logic
 tests/               pytest suite for transform/validation
 docs/                Architecture notes, design decisions, data dictionary
