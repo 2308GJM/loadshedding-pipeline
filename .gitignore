@@ -2,7 +2,9 @@
 __pycache__/
 *.pyc
 .pytest_cache/
-data/raw/
+data/raw
+data/silver/
+data/gold/
 data/processed/
 *.egg-info/
 .venv/
