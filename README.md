@@ -78,6 +78,12 @@ docs/                Architecture notes, design decisions, data dictionary
 ## Running it
 
 ```bash
+cp .env.example .env
+```
+Fill in `ESP_API_TOKEN` and `ESP_AREA_IDS` in `.env` (see comments in
+`.env.example` for how to obtain each).
+
+```bash
 docker compose up
 ```
 
