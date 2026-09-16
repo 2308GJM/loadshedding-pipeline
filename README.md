@@ -90,9 +90,12 @@ docker compose up
 Airflow UI: http://localhost:8080
 
 ## Status
- 
-In active development — see commit history for progress. Built solo as
-part of the WeThinkCode Data Engineering elective.
+
+Complete — ingestion, validation, join, and load are all implemented,
+tested, and verified end-to-end via an automated Airflow DAG run. See
+`docs/decisions.md` for design reasoning and known limitations, and
+`docs/analysis.md` for findings. Built solo as part of the WeThinkCode
+Data Engineering elective.
 
 ## Demo
 
