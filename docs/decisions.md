@@ -20,14 +20,16 @@ later, the raw layer means reprocessing from source instead of re-fetching
 (or losing) historical data. This also makes freshness/staleness auditing
 possible after the fact.
 
-## Why PySpark instead of pandas
+## Why plain Python instead of PySpark
 
-Data volume here is small enough that pandas would work. Spark is used
-because the validation/transform logic (schema enforcement, dedup, range
-checks) is written once and should scale unchanged whether the pipeline is
-processing a week of data or a year. It's also a deliberate extension of
-ALX coursework (Apache Spark, Big Data Fundamentals) into a real pipeline
-rather than a training exercise.
+PySpark was the original plan, extending ALX coursework (Apache Spark, Big
+Data Fundamentals) into a real pipeline. In practice, data volume at this
+scale (a handful of records per run) never justified Spark's overhead —
+plain Python dictionaries and loops are simpler, faster to iterate on, and
+just as correct for validation, deduplication, and range checks at this
+size. PySpark remains installed in the Docker image as a deliberate choice
+left available, not wired in, since the added complexity wasn't earned by
+the actual data volume this pipeline processes.
 
 ## Why Airflow instead of a cron script
 
@@ -47,7 +49,7 @@ implemented). Outage windows with no weather reading inside the tolerance
 are logged and excluded from the enriched dataset, not silently joined to
 whatever is closest regardless of distance.
 
-## Storage: Postgres vs DuckDB
+## Storage: Postgres
 
 Postgres is used as the operational serving layer written to by the
 pipeline — it's the standard choice for a service-backed store, runs
