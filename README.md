@@ -2,8 +2,8 @@
 
 A real-world data engineering pipeline that ingests South African load-shedding
 data (EskomSePush) and weather data (Open-Meteo), validates and transforms
-both with Pthon, joins them by timestamp/area, and loads the result into a
-queryable analytical store — orchestrated end-to-end with Apache Airflow and
+both with Python, joins them by timestamp/area, and loads the result into a
+queryable analytical store and then orchestrated end-to-end with Apache Airflow and
 containerized with Docker Compose.
 
 **Question this pipeline answers:** does load-shedding stage or outage
@@ -75,20 +75,102 @@ tests/               pytest suite for transform/validation
 docs/                Architecture notes, design decisions, data dictionary
 ```
 
-## Running it
+## Setup
+
+### 1. Clone and enter the repo
+
+```bash
+git clone https://github.com/2308GJM/loadshedding-pipeline.git
+cd loadshedding-pipeline
+```
+
+### 2. Configure environment variables
 
 ```bash
 cp .env.example .env
 ```
-Fill in `ESP_API_TOKEN` and `ESP_AREA_IDS` in `.env` (see comments in
-`.env.example` for how to obtain each).
+
+Open `.env` and fill in:
+- `ESP_API_TOKEN` — get a free token at https://eskomsepush.gumroad.com/l/api
+- `ESP_AREA_IDS` — find yours by searching `/areas_search?text=<suburb>` against
+  the EskomSePush API (see comments in `.env.example`)
+
+Leave `ESP_SCHEDULE_TEST_MODE=current` set — this uses EskomSePush's official
+test facility to return a realistic sample outage event without consuming API
+quota, which is necessary while national load-shedding stage is 0.
+
+### 3. Create a virtual environment (for local runs outside Docker)
 
 ```bash
+python -m venv .venv
+source .venv/Scripts/activate   # Windows Git Bash
+# or: source .venv/bin/activate   # Mac/Linux
+pip install -r requirements.txt
+```
+
+## Running the pipeline locally (outside Docker)
+
+Run each stage in order. Every module defaults to today's date.
+
+```bash
+# 1. Ingestion — pulls from both APIs, lands raw JSON
+python src/ingestion/ingest_loadshedding.py
+python src/ingestion/ingest_weather.py
+
+# 2. Validation — cleans and flags each source
+python src/transform/validate_transform_loadshedding.py
+python src/transform/validate_transform_weather.py
+
+# 3. Join — matches events to weather by nearest timestamp
+python src/transform/join_enrich.py
+```
+
+The load step needs Postgres reachable. Start just the database (no need for
+the full Airflow stack) and point at its host-mapped port:
+
+```bash
+docker compose up -d pipeline-db
+PIPELINE_DB_HOST=localhost PIPELINE_DB_PORT=5433 python src/load/load_to_store.py
+```
+
+### Run the analysis
+
+```bash
+PIPELINE_DB_HOST=localhost PIPELINE_DB_PORT=5433 python src/analysis/analyze_events.py
+```
+
+## Running the full pipeline via Airflow (Docker)
+
+```bash
+docker compose up airflow-init
 docker compose up
 ```
 
-Airflow UI: http://localhost:8080
+Airflow UI: http://localhost:8080 (login: `admin` / `admin`)
 
+In the UI:
+1. Unpause `loadshedding_weather_pipeline`
+2. Click the ▶ trigger button to run it manually, or let it run on its
+   `@daily` schedule
+3. Click into the run to watch the graph view — all 6 tasks should turn green
+
+To bring the stack down:
+```bash
+docker compose down
+```
+
+## Running tests
+
+```bash
+pytest tests/ -v
+```
+
+## Checking the data directly
+
+```bash
+docker exec -it loadshedding-pipeline-pipeline-db-1 psql -U pipeline -d loadshedding \
+  -c "SELECT execution_date, schedule_id, stage, temperature_2m FROM enriched_events ORDER BY execution_date;"
+```
 ## Status
 
 Complete — ingestion, validation, join, and load are all implemented,
