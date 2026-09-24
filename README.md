@@ -181,7 +181,7 @@ Data Engineering elective.
 
 ## Demo
 
-Demo video: _link added on submission_
+https://youtu.be/Jsrn-XXTHL4?si=ABbDXDGiNrDteZEB
 
 ## Repo Verification Code
 
@@ -192,3 +192,4 @@ WTC-642FT4AE
 Author previously completed the ALX Data Engineering programme (Big Data
 Fundamentals, Docker, Airflow, Apache Spark) — this project applies that
 foundation to a self-directed, real-world dataset end to end.
+
