@@ -183,6 +183,10 @@ Data Engineering elective.
 
 Demo video: _link added on submission_
 
+## Repo Verification Code
+
+WTC-642FT4AE
+
 ## Background
 
 Author previously completed the ALX Data Engineering programme (Big Data
